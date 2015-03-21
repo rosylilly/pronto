@@ -34,8 +34,12 @@ module Pronto
       def commits_until(sha)
         result = []
         @repo.walk(head, Rugged::SORT_TOPO).take_while do |commit|
-          result << commit.oid
-          !commit.oid.start_with?(sha)
+          begin
+            result << commit.oid
+            !commit.oid.start_with?(sha)
+          rescue Rugged::OdbError
+            true
+          end
         end
         result
       end
